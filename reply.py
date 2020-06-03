@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+#  このスクリプトは10分間隔で実行することを前提としています
+
 import tweepy
+import time
 
 import key
 
@@ -13,11 +16,14 @@ Twitter_ID = str(api.me().screen_name)
 
 timeline = api.mentions_timeline()
 
+nowTime = time.time()
+
 for status in timeline:
     status_id = status.id
     screen_name = status.user.screen_name
     text = str(status.text).replace("\n", "")
-    if not status.favorited:
+    mentionTime = status.created_at.timestamp()
+    if nowTime - mentionTime < 33000.0:  # 実行環境が標準時の場合は600.0にしてください
         try:
             reply_text = "@" + screen_name + " " + "テストリプライ"
             api.create_favorite(status.id)
